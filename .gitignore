@@ -1,32 +1,281 @@
-# Prerequisites
-*.d
+#include<iostream>
+#include<string>
+#include<malloc.h>
+#define null 0
+using namespace std;
+template<typename T>
+class linked_list
+{
+private:
+    struct node
+    {
+        T value;
+        node* next;
+    };
+    typedef node* ptr;
+    ptr new_node()
+    {
+        ptr p = (ptr)malloc(sizeof(node));
+        return p;
+    }
+    ptr list;
+    int siz;
+public:
+    linked_list()
+    {
+        list=null;
+        siz=0;
+    }
+    void add_first_node(T v)
+    {
+        ptr p = new_node();
+        p->value = v;
+        p->next = list;
+        list = p;
+        siz++;
+    }
+    void add_last_node(T v)
+    {
+        ptr l = list;
+        ptr p = new_node();
+        p->value = v;
+        if(list==null)
+        {
+            p->next = list;
+            list = p;
+        }
+        else
+        {
+            while (l->next != null)
+            {
+                l = l->next;
+            }
+            l->next = p;
+            p->next = null;
+        }
+        siz++;
+    }
+    void add_node(T v,int index)
+    {
+        if(index<=siz+1)
+        {
+            ptr p,o=list;
+            p = new_node();
+            p->value = v;
+            for (int i = 1; i <index-1; i++)
+            {
+                o=o->next;
+            }
+            p->next=o->next;
+            o->next=p;
+            siz++;
+        }
+        else
+        {
+            cout<<"the index("<<index<<") is out of list!"<<endl;
+        }
+    }
+    void add_before(T before,T v)
+    {
+        if(isEmpty())
+        {
+            cout<<"not found "<<before<<" to add before it!\n";
+            return ;
+        }
+        ptr l=list,m=l,p=new_node();
+        bool vaild=false;
+        p->value=v;
+        do
+        {
+            if(l->value==before)
+            {
+                vaild=true;
+                break;
+            }
+            m=l;
+            l=l->next;
+        }
+        while(l!=null);
+        if(!vaild)
+        {
+            cout<<"not found "<<before<<" to add before it!\n";
+            return ;
+        }
+        // p->prev=l->prev;
+        p->next=l;
+        if(m!=list)
+            m->next=p;
+        else
+            list=p;
+        // l->prev=p;
+        siz++;
+    }
+    void add_after(T after,T v)
+    {
+        if(isEmpty())
+        {
+            cout<<"not found "<<after<<" to add after it!\n";
+            return ;
+        }
+        ptr l=list,m=l,p=new_node();
+        bool vaild=false;
+        p->value=v;
+        do
+        {
+            if(l->value==after)
+            {
+                vaild=true;
+                break;
+            }
+            m=l;
+            l=l->next;
+        }
+        while(l!=null);
+        if(!vaild)
+        {
+            cout<<"not found "<<after<<" to add after it!\n";
+            return ;
+        }
+        //p->prev=l;
+        p->next=l->next;
+        //if(l->next!=null)
+        //l->next->prev=p;
+        l->next=p;
+        siz++;
+    }
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+    void del_first_node()
+    {
+        if(isEmpty())
+        {
+            cout<<"list is Empty\n";
+            return;
+        }
+        ptr l = list;
+        list = l->next;
+        free(l);
+        siz--;
+    }
+    void del_last_node()
+    {
+        if(isEmpty())
+        {
+            cout<<"list is Empty\n";
+            return;
+        }
+        ptr l=list,n;
+        while (l->next != null)
+        {
+            n = l;
+            l = l->next;
+        }
+        n->next = null;
+        free(l);
+        siz--;
+    }
+    void del_NodeByIndx(int index)
+    {
+        if(isEmpty() || index>getSize())
+        {
+            cout<<"list is Empty\n";
+            return;
+        }
+        if(index==1)
+            del_first_node();
+        else
+        {
+            ptr l = list, n=list;
+            for (int i = 1; i <index; i++)
+            {
+                n=l;
+                l = l->next;
+            }
+            n->next=l->next;
+            free(l);
+            siz--;
+        }
+    }
 
-# Precompiled Headers
-*.gch
-*.pch
+    void del_NodeByValue(T x)
+    {
+        if(isEmpty())
+        {
+            cout<<"list is Empty\n";
+            return;
+        }
+        ptr l=list,m=list;
+        while(l->next!=null)
+        {
+            if(l->value==x)
+                break;
+            m=l;
+            l=l->next;
+        }
+        m->next=l->next;
+        free(l);
+        siz--;
+    }
+    void show()
+    {
+        if(isEmpty())
+        {
+            cout<<"list is Empty!\n";
+            return;
+        }
+        ptr l = list;
+        while (l->next != null)
+        {
+            cout << l->value<<" ";
+            l = l->next;
+        }
+        cout<<l->value<<endl;
+    }
+    void revese()
+    {
+        ptr prev=null;
+        ptr curr=list;
+        ptr next=curr->next;
+        while(next!=null)
+        {
+            next=curr->next;
+            curr->next=prev;
+            prev=curr;
+            curr=next;
+        }
+        list=prev;
+    }
+    void search_node(T n)
+    {
+        int pos=1;
+        ptr l=list;
+        while(l->next!=null)
+        {
+            if(l->value==n)
+            {
+                cout<<pos;
+                break;
+            }
+            l=l->next;
+            pos++;
+        }
+    }
+    int getSize()
+    {
+        return siz;
+    }
+    bool isEmpty()
+    {
+        return list==null;
+    }
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
+};
+int main()
+{
+    linked_list<int> l;
+    l.add_first_node(4);
+    // l.add_first_node(3);
+    l.add_before(4,5);
+    l.add_after(5,7);
+    l.show();
+    return 0;
+}
